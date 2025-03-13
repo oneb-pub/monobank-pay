@@ -226,4 +226,24 @@ class Payment extends RequestBuilder
         $this->getDataFromGuzzleResponse($response);
     }
 
+    /**
+     * Фіскальні чеки по оплаті
+     * @param string $invoiceId Ідентифікатор рахунку
+     * @link https://api.monobank.ua/docs/acquiring.html#/paths/~1api~1merchant~1invoice~1fiscal-checks?invoiceId={invoiceId}/get
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @throws \Exception
+     * @author Dominus <dominus@econet.org.ua>
+     */
+    public function getFiscalReceipts(string $invoiceId): array
+    {
+        $query = [
+            'invoiceId' => $invoiceId
+        ];
+        $response = $this->client->getClient()->request('GET','/api/merchant/invoice/fiscal-checks',[
+            \GuzzleHttp\RequestOptions::QUERY => $query
+        ]);
+
+        return $this->getDataFromGuzzleResponse($response);
+    }
+
 }
