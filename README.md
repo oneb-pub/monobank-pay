@@ -96,6 +96,10 @@ print_r($result);
 
 //видалення картки 
 deleteCardToken('67XZtXdR4NpKU3');
+
+//Список фіскальних чеків
+$result = $monoPayment->getFiscalReceipts('2305046jUBEj8WfyaBdB');
+print_r($result);
 ```
 
 ### Отримання вебхуку:
