@@ -5,8 +5,8 @@ namespace MonoPay;
 
 class Client extends RequestBuilder
 {
-    private ?string $merchantId;
-    private ?string $merchantName;
+    private ?string $merchantId = null;
+    private ?string $merchantName = null;
     public string $apiEndpoint = 'https://api.monobank.ua/';
     private \GuzzleHttp\Client $httpClient;
 
@@ -22,7 +22,7 @@ class Client extends RequestBuilder
         $headers = [
             'X-Token' => $token,
         ];
-        if($custom_headers){
+        if ($custom_headers) {
             $headers = array_merge($custom_headers, $headers);
         }
 
@@ -32,32 +32,33 @@ class Client extends RequestBuilder
             \GuzzleHttp\RequestOptions::HEADERS => $headers,
             \GuzzleHttp\RequestOptions::HTTP_ERRORS => false,
         ]);
-        $response = $this->httpClient->request('GET', '/api/merchant/details');
-        $json = $response->getBody()->getContents();
-        $data = json_decode($json, true);
-        if ($response->getStatusCode() == 200) {
-            if ($data && isset($data['merchantId']) && isset($data['merchantName'])) {
-                $this->merchantId = $data['merchantId'];
-                $this->merchantName = $data['merchantName'];
-            } else {
-                throw new \Exception('Cannot decode json response from Mono', 500);
-            }
-        } else {
-            throw new \Exception($data['errorDescription'] ?? 'Unknown error response: ' . $json, $response->getStatusCode());
-        }
     }
 
     public function getMerchantId(): string
     {
+        if ($this->merchantId === null) {
+            $data = $this->getMerchant();
+            if ($data && isset($data['merchantId']) && isset($data['merchantName'])) {
+                $this->merchantId = $data['merchantId'];
+                $this->merchantName = $data['merchantName'];
+            }
+        }
         return $this->merchantId;
     }
 
     public function getMerchantName(): string
     {
+        if ($this->merchantId === null) {
+            $data = $this->getMerchant();
+            if ($data && isset($data['merchantId']) && isset($data['merchantName'])) {
+                $this->merchantId = $data['merchantId'];
+                $this->merchantName = $data['merchantName'];
+            }
+        }
         return $this->merchantName;
     }
 
-    public function getClient():  \GuzzleHttp\Client
+    public function getClient(): \GuzzleHttp\Client
     {
         return $this->httpClient;
     }
@@ -71,10 +72,10 @@ class Client extends RequestBuilder
      */
     public function getPublicKey(): string
     {
-        $response = $this->getClient()->request('GET','/api/merchant/pubkey');
+        $response = $this->getClient()->request('GET', '/api/merchant/pubkey');
         $data = $this->getDataFromGuzzleResponse($response);
-        if(!isset($data['key'])){
-            throw new \Exception('Invalid response from Mono API',500);
+        if (!isset($data['key'])) {
+            throw new \Exception('Invalid response from Mono API', 500);
         }
         return $data['key'];
     }
@@ -88,7 +89,7 @@ class Client extends RequestBuilder
      */
     public function getMerchant(): array
     {
-        $response = $this->getClient()->request('GET','/api/merchant/details');
+        $response = $this->getClient()->request('GET', '/api/merchant/details');
         return $this->getDataFromGuzzleResponse($response);
     }
 }
