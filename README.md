@@ -126,6 +126,14 @@ if ($monoWebhook->verify($body)) {
 }
 ```
 
+### Використання через проксі:
+Третім аргументом конструктора можна передати будь-які [опції Guzzle](https://docs.guzzlephp.org/en/stable/request-options.html), зокрема `proxy`:
+```php
+$monoClient = new \MonoPay\Client('YOUR_TOKEN_HERE', [], [
+    'proxy' => 'http://10.0.0.1:3128',
+]);
+```
+
 #### TODO List:
 * Переробити вхідні параметри і вихідні дані на класи з описаними методами
 
